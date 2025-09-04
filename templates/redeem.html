@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Redeem Points</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#f5f0e6;margin:0;padding:20px;}
+  .nav a{margin-right:10px;text-decoration:none;color:#4b3621;font-weight:bold}
+  .panel{background:#f5e9d3;border-radius:12px;padding:15px;margin-bottom:15px;display:inline-block}
+  .panel input,.panel button{padding:6px;border-radius:6px;border:1px solid #c9bba3}
+  .panel button{background:#8b5e3c;color:#fff;border:none;cursor:pointer}
+  .cards{display:flex;flex-wrap:wrap;gap:12px}
+  .card{background:#d7c2a1;color:#4b3621;width:290px;border-radius:12px;padding:14px}
+  .row{display:flex;justify-content:space-between;margin:4px 0}
+  .redeem-area{margin-top:8px;background:#f5e9d3;border-radius:8px;padding:8px}
+  .btn{padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:#8b5e3c;color:#fff}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/redeem">Redeem</a>
+    <a href="/history">Purchase History</a>
+  </div>
+
+  <div class="panel">
+    <form method="POST" action="/redeem">
+      <input type="hidden" name="action" value="search">
+      <input type="text" name="query" placeholder="Search by Customer ID or Mobile" required />
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="cards">
+    {% for c in customers %}
+    <div class="card">
+      <div class="row"><div><b>ID</b></div><div>{{ c.Customer_ID }}</div></div>
+      <div class="row"><div><b>Name</b></div><div>{{ c.Name }}</div></div>
+      <div class="row"><div><b>Mobile</b></div><div>{{ c.Mobile }}</div></div>
+      <div class="row"><div><b>Points</b></div><div>{{ c.Points }}</div></div>
+
+      <div class="redeem-area">
+        <form method="POST" action="/redeem" style="margin:0">
+          <input type="hidden" name="action" value="redeem">
+          <input type="hidden" name="customer_id" value="{{ c.Customer_ID }}">
+          <div style="font-size:12px; margin-bottom:6px;">Enter points to redeem (min 100, max available)</div>
+          <input type="number" name="redeem_points" min="100" max="{{ c.Points }}" value="{{ c.Points }}" {% if c.Points < 100 %}disabled{% endif %} />
+          <button type="submit" class="btn" {% if c.Points < 100 %}disabled{% endif %}>Redeem</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Purchase History</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#f5f0e6;margin:0;padding:20px;}
+  .nav a{margin-right:10px;text-decoration:none;color:#4b3621;font-weight:bold}
+  .panel{background:#f5e9d3;border-radius:12px;padding:15px;margin-bottom:15px;display:inline-block}
+  .panel input,.panel button{padding:6px;border-radius:6px;border:1px solid #c9bba3}
+  .panel button{background:#8b5e3c;color:#fff;border:none;cursor:pointer}
+  table{width:100%;border-collapse:collapse;background:#fff}
+  th,td{border:1px solid #d8c7ad;padding:8px;text-align:left;color:#4b3621}
+  th{background:#e9dbc4}
+  .header{margin:8px 0;color:#4b3621}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/redeem">Redeem</a>
+    <a href="/history">Purchase History</a>
+  </div>
+
+  <div class="panel">
+    <form method="POST" action="/history">
+      <input type="text" name="query" placeholder="Customer ID or Mobile" required />
+      <button type="submit">View History</button>
+    </form>
+  </div>
+
+  {% if header %}
+  <div class="header"><b>Customer:</b> {{ header.Customer_ID }} — {{ header.Name }} ({{ header.Mobile }})</div>
+  {% endif %}
+
+  {% if purchases and purchases|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Points Earned</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in purchases %}
+      <tr>
+        <td>{{ p.Purchase_Date }}</td>
+        <td>{{ "%.2f"|format(p.Amount) }}</td>
+        <td>{{ p.Points_Earned }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="header">No purchases to show.</div>
+  {% endif %}
+</body>
+{% endblock %}
+

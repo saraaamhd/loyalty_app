@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Loyalty App</title>
+<style>
+  body{font-family:Arial,sans-serif;background:#f5f0e6;margin:0;padding:20px;}
+  .nav{margin-bottom:15px}
+  .nav a{margin-right:10px;text-decoration:none;color:#4b3621;font-weight:bold}
+  .panel{background:#f5e9d3;border-radius:12px;padding:15px;margin-bottom:15px;display:inline-block}
+  .panel h2{margin:0 0 10px 0;color:#4b3621}
+  .panel input, .panel button{padding:6px;border-radius:6px;border:1px solid #c9bba3}
+  .panel button{background:#8b5e3c;color:#fff;border:none;cursor:pointer}
+  .cards{display:flex;flex-wrap:wrap;gap:12px}
+  .card{background:#d7c2a1;color:#4b3621;width:290px;border-radius:12px;padding:14px}
+  .row{display:flex;justify-content:space-between;margin:4px 0}
+  .actions{display:flex;gap:8px;margin-top:8px}
+  .btn{padding:6px 10px;border:none;border-radius:6px;cursor:pointer;color:#fff}
+  .btn-update{background:#8b5e3c}
+  .btn-delete{background:#a06a3b}
+  .edit-form{display:none;margin-top:8px;background:#f5e9d3;border-radius:8px;padding:8px}
+  .edit-form input{width:100%;margin-bottom:6px}
+</style>
+<script>
+  function showEdit(id){
+    document.getElementById('edit-'+id).style.display='block';
+  }
+</script>
+</head>
+<body>
+  <div class="nav">
+    <a href="/">Home</a>
+    <a href="/redeem">Redeem</a>
+    <a href="/history">Purchase History</a>
+  </div>
+
+  <div class="panel">
+    <h2>Add Purchase</h2>
+    <form method="POST" action="/">
+      <input type="text"   name="name"          placeholder="Customer Name" required />
+      <input type="text"   name="mobile"        placeholder="Mobile Number" required />
+      <input type="number" name="amount"        placeholder="Purchase Amount" step="0.01" required />
+      <input type="date"   name="purchase_date" required />
+      <button type="submit">Add</button>
+    </form>
+    <div style="font-size:12px;color:#4b3621;margin-top:6px;">
+      Rule: 10 riyal = 1 point. Redeem allowed when points ≥ 100.
+    </div>
+  </div>
+
+  <div class="cards">
+    {% for c in customers %}
+    <div class="card">
+      <div class="row"><div><b>ID</b></div><div>{{ c.Customer_ID }}</div></div>
+      <div class="row"><div><b>Name</b></div><div>{{ c.Name }}</div></div>
+      <div class="row"><div><b>Mobile</b></div><div>{{ c.Mobile }}</div></div>
+      <div class="row"><div><b>Total Purchase</b></div><div>{{ c.Total_Purchase }}</div></div>
+      <div class="row"><div><b>Points</b></div><div>{{ c.Points }}</div></div>
+      <div class="row"><div><b>Redeemed</b></div><div>{{ c.Redeemed_Points }}</div></div>
+      <div class="row"><div><b>Last Purchase</b></div><div>{{ c.Purchase_Date }}</div></div>
+
+      <div class="actions">
+        <button class="btn btn-update" type="button" onclick="showEdit('{{ c.Customer_ID }}')">Update</button>
+        <form method="POST" action="/delete_customer" style="display:inline">
+          <input type="hidden" name="customer_id" value="{{ c.Customer_ID }}">
+          <button class="btn btn-delete" type="submit">Delete</button>
+        </form>
+      </div>
+
+      <form id="edit-{{ c.Customer_ID }}" class="edit-form" method="POST" action="/update_customer">
+        <input type="hidden" name="customer_id" value="{{ c.Customer_ID }}">
+        <input type="text" name="new_name" placeholder="New Name" value="{{ c.Name }}">
+        <input type="text" name="new_mobile" placeholder="New Mobile" value="{{ c.Mobile }}">
+        <button class="btn btn-update" type="submit">Save</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+{% endblock %}
+
